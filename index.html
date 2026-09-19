@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="保留照片结构，以不同视觉材质重新讲述照片故事。">
+    <title>照片故事多 · Photo Story Studio</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#workspace">跳到工作区</a>
+    <header class="site-header">
+      <a class="brand" href="#" aria-label="照片故事多首页">
+        <span class="brand-mark" aria-hidden="true">照</span>
+        <span><strong>照片故事多</strong><small>PHOTO STORY STUDIO</small></span>
+      </a>
+      <div class="header-meta">
+        <span class="privacy-note">照片默认只在本机预览</span>
+        <button class="icon-button" id="settingsButton" type="button" aria-haspopup="dialog" aria-controls="settingsDialog">
+          <span aria-hidden="true">⚙</span><span>生成设置</span>
+        </button>
+      </div>
+    </header>
+
+    <main id="workspace" class="workspace">
+      <section class="intro" aria-labelledby="pageTitle">
+        <p class="eyebrow">STRUCTURE STAYS · STORY CHANGES</p>
+        <h1 id="pageTitle">让同一张照片，<em>讲不同的故事。</em></h1>
+        <p>保留主体、构图与空间关系，只重写色彩、材质、线条和时间感。</p>
+      </section>
+
+      <section class="step-panel upload-panel" aria-labelledby="uploadTitle">
+        <div class="step-heading">
+          <span class="step-index">01</span>
+          <div><h2 id="uploadTitle">放入一张照片</h2><p>JPG、PNG 或 WebP，最大 20MB。</p></div>
+        </div>
+        <div id="dropZone" class="drop-zone" tabindex="0" role="button" aria-describedby="uploadHint">
+          <input id="photoInput" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+          <div id="uploadEmpty" class="upload-empty">
+            <span class="upload-glyph" aria-hidden="true">↗</span>
+            <strong>拖放照片到这里</strong>
+            <span id="uploadHint">或按 Enter 选择文件</span>
+          </div>
+          <div id="uploadPreview" class="upload-preview" hidden>
+            <img id="sourcePreview" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="待转换照片预览">
+            <div class="image-meta"><span id="fileName"></span><span id="fileMeta"></span></div>
+            <button id="removePhoto" class="remove-button" type="button">移除照片</button>
+          </div>
+        </div>
+        <p id="uploadError" class="field-error" role="alert" hidden></p>
+      </section>
+
+      <section class="step-panel styles-panel" aria-labelledby="stylesTitle">
+        <div class="step-heading">
+          <span class="step-index">02</span>
+          <div><h2 id="stylesTitle">选择故事的材质</h2><p><span id="styleCount">0</span> 种风格，支持检索与智能推荐。</p></div>
+        </div>
+        <div class="style-toolbar">
+          <label class="search-field">
+            <span class="sr-only">搜索风格</span>
+            <span aria-hidden="true">⌕</span>
+            <input id="styleSearch" type="search" placeholder="搜索风格、质感或情绪">
+          </label>
+          <label class="subject-field">
+            <span>照片类型</span>
+            <select id="subjectType">
+              <option value="auto">自动判断</option>
+              <option value="portrait">人物肖像</option>
+              <option value="architecture">建筑风景</option>
+              <option value="street">街景纪实</option>
+              <option value="nature">自然风景</option>
+              <option value="still-life">静物器物</option>
+              <option value="abstract">抽象光影</option>
+            </select>
+          </label>
+        </div>
+        <div id="categoryTabs" class="category-tabs" role="group" aria-label="风格分类"></div>
+        <div id="styleGrid" class="style-grid" role="group" aria-label="可选照片风格"></div>
+        <p id="emptyStyles" class="empty-state" hidden>没有匹配的风格，换个关键词试试。</p>
+      </section>
+
+      <section class="step-panel craft-panel" aria-labelledby="craftTitle">
+        <div class="step-heading">
+          <span class="step-index">03</span>
+          <div><h2 id="craftTitle">调整叙事方式</h2><p>所有参数都会写入最终提示词。</p></div>
+        </div>
+        <div class="controls-grid">
+          <label><span>结构保留</span><select id="structureLevel">
+            <option value="strict">严格保留</option><option value="balanced" selected>平衡重构</option><option value="expressive">自由演绎</option>
+          </select></label>
+          <label><span>输出画幅</span><select id="aspectRatio">
+            <option value="source">跟随原图</option><option value="1:1">1:1 方形</option><option value="4:5">4:5 竖版</option>
+            <option value="3:4">3:4 竖版</option><option value="4:3">4:3 横版</option><option value="16:9">16:9 宽屏</option>
+          </select></label>
+          <label><span>文字策略</span><select id="textPolicy">
+            <option value="style">遵循风格规则</option><option value="none">不添加文字</option><option value="minimal">少量题注</option>
+          </select></label>
+          <label><span>输出尺寸</span><select id="outputSize">
+            <option value="1024x1024">1024 × 1024</option><option value="1024x1536">1024 × 1536</option><option value="1536x1024">1536 × 1024</option>
+          </select></label>
+        </div>
+        <label class="story-field"><span>想讲什么故事？ <small>可选</small></span>
+          <textarea id="storyInput" rows="3" maxlength="240" placeholder="例如：像雨后翻开的一页旧旅行日记，安静，但有一点期待。"></textarea>
+          <span class="char-count"><span id="storyCount">0</span>/240</span>
+        </label>
+        <div class="prompt-card">
+          <div class="prompt-header"><span>生成提示词</span><button id="copyPrompt" class="text-button" type="button">复制</button></div>
+          <pre id="promptOutput" tabindex="0"></pre>
+        </div>
+        <button id="generateButton" class="primary-button" type="button" disabled>
+          <span class="button-label">生成照片故事</span><span class="button-progress" hidden>正在重写光影与材质…</span>
+        </button>
+        <p id="generationHint" class="generation-hint">上传照片并选择风格后即可生成。也可以只复制提示词到其他图像工具使用。</p>
+        <p id="generationError" class="field-error" role="alert" hidden></p>
+      </section>
+
+      <section id="resultPanel" class="step-panel result-panel" aria-labelledby="resultTitle" hidden>
+        <div class="step-heading">
+          <span class="step-index">04</span>
+          <div><h2 id="resultTitle">故事已经显影</h2><p id="resultSummary"></p></div>
+        </div>
+        <div id="comparison" class="comparison">
+          <img id="resultImage" class="comparison-after" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="风格转换结果">
+          <div id="beforeLayer" class="comparison-before"><img id="resultSource" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="原始照片"></div>
+          <input id="comparisonSlider" type="range" min="0" max="100" value="50" aria-label="拖动比较原图和生成结果">
+          <span class="compare-label before">原图</span><span class="compare-label after">故事</span>
+        </div>
+        <div class="result-actions">
+          <button id="regenerateButton" class="secondary-button" type="button">重新生成</button>
+          <button id="downloadResult" class="primary-button download-button" type="button">下载图片</button>
+        </div>
+      </section>
+    </main>
+
+    <footer><p>照片是结构，风格是时间与情绪的容器。</p><span>Based on Photo Story Style Transformer · MIT</span></footer>
+
+    <dialog id="settingsDialog" class="settings-dialog">
+      <form method="dialog">
+        <div class="dialog-heading"><div><p class="eyebrow">IMAGE API</p><h2>生成设置</h2></div><button class="dialog-close" value="cancel" aria-label="关闭">×</button></div>
+        <p class="dialog-note">配置仅保存在当前页面内存，不写入浏览器存储。请只使用允许浏览器跨域请求的服务。</p>
+        <label><span>API Endpoint</span><input id="apiEndpoint" type="url" value="https://api.openai.com/v1/images/edits" spellcheck="false"></label>
+        <label><span>Model</span><input id="apiModel" type="text" value="gpt-image-1" spellcheck="false"></label>
+        <label><span>API Key</span><input id="apiKey" type="password" autocomplete="off" placeholder="sk-…"></label>
+        <label><span>Authorization Header <small>高级</small></span><input id="authHeader" type="text" value="Bearer {key}" spellcheck="false"></label>
+        <div class="dialog-actions"><button class="secondary-button" value="cancel">取消</button><button id="saveSettings" class="primary-button" value="default">应用设置</button></div>
+      </form>
+    </dialog>
+
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+    <script src="styles-data.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
